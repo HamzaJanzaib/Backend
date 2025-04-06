@@ -1,12 +1,10 @@
-# Uber Clone Backend API Documentation
+# Uber Backend API Documentation
 
-This document provides information about the backend API endpoints for the Uber Clone application.
+This document provides information about the backend API endpoints for the Uber application.
 
 ## Base URL
 
-```
-http://localhost:3000
-```
+The base URL for the API is `https://uber-backend.onrender.com`.
 
 ## Authentication
 
@@ -93,6 +91,89 @@ Register a new user in the system.
 }
 ```
 
+### User Login
+
+Authenticate a user and receive a JWT token.
+
+**URL**: `/users/login`
+
+**Method**: `POST`
+
+**Authentication required**: No
+
+**Request Body**:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+**Data Constraints**:
+
+- `email` (required): Must be a valid email format
+- `password` (required): Must be at least 6 characters long
+
+**Success Response**:
+
+- **Code**: 200 OK
+- **Content Example**:
+
+```json
+{
+  "user": {
+    "_id": "60d21b4667d0d8992e610c85",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "socketId": null
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Error Responses**:
+
+- **Code**: 400 Bad Request
+  - **Condition**: If validation fails (e.g., invalid email format)
+  - **Content Example**:
+
+```json
+{
+  "errors": [
+    {
+      "value": "invalid-email",
+      "msg": "Invalid email format",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+- **Code**: 401 Unauthorized
+  - **Condition**: If the email or password is incorrect
+  - **Content Example**:
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+- **Code**: 500 Internal Server Error
+  - **Condition**: If there's a server error during authentication
+  - **Content Example**:
+
+```json
+{
+  "message": "Error message details"
+}
+```
+
 ## Data Models
 
 ### User Model
@@ -111,7 +192,7 @@ Register a new user in the system.
 
 ## Authentication
 
-After registration, the returned JWT token should be included in the Authorization header for protected routes:
+After registration or login, the returned JWT token should be included in the Authorization header for protected routes:
 
 ```
 Authorization: Bearer <token>
