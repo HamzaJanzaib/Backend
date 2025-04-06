@@ -174,6 +174,100 @@ Authenticate a user and receive a JWT token.
 }
 ```
 
+### User Profile
+
+Retrieve the profile information of the authenticated user.
+
+**URL**: `/users/profile`
+
+**Method**: `GET`
+
+**Authentication required**: Yes
+
+**Success Response**:
+
+- **Code**: 200 OK
+- **Content Example**:
+
+```json
+{
+  "user": {
+    "_id": "60d21b4667d0d8992e610c85",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "socketId": null
+  }
+}
+```
+
+**Error Responses**:
+
+- **Code**: 401 Unauthorized
+  - **Condition**: If the user is not authenticated
+  - **Content Example**:
+
+```json
+{
+  "message": "Unauthorized access"
+}
+```
+
+- **Code**: 500 Internal Server Error
+  - **Condition**: If there's a server error while fetching the profile
+  - **Content Example**:
+
+```json
+{
+  "message": "Error message details"
+}
+```
+
+### User Logout
+
+Log out the currently authenticated user.
+
+**URL**: `/users/logout`
+
+**Method**: `POST`
+
+**Authentication required**: Yes
+
+**Success Response**:
+
+- **Code**: 200 OK
+- **Content Example**:
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Error Responses**:
+
+- **Code**: 401 Unauthorized
+  - **Condition**: If the user is not authenticated
+  - **Content Example**:
+
+```json
+{
+  "message": "Unauthorized access"
+}
+```
+
+- **Code**: 500 Internal Server Error
+  - **Condition**: If there's a server error during logout
+  - **Content Example**:
+
+```json
+{
+  "message": "Error message details"
+}
+```
+
 ## Data Models
 
 ### User Model
