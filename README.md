@@ -12,7 +12,9 @@ The API uses JWT (JSON Web Token) for authentication. When a user registers or l
 
 ## Endpoints
 
-### User Registration
+### User Routes
+
+#### User Registration
 
 Register a new user in the system.
 
@@ -65,33 +67,9 @@ Register a new user in the system.
 **Error Responses**:
 
 - **Code**: 400 Bad Request
-  - **Condition**: If validation fails (e.g., firstname too short, invalid email format)
-  - **Content Example**:
-
-```json
-{
-  "errors": [
-    {
-      "value": "Jo",
-      "msg": "First name must be at least 3 characters",
-      "param": "fullname.firstname",
-      "location": "body"
-    }
-  ]
-}
-```
-
 - **Code**: 500 Internal Server Error
-  - **Condition**: If there's a server error during user creation
-  - **Content Example**:
 
-```json
-{
-  "message": "Error message details"
-}
-```
-
-### User Login
+#### User Login
 
 Authenticate a user and receive a JWT token.
 
@@ -110,71 +88,17 @@ Authenticate a user and receive a JWT token.
 }
 ```
 
-**Data Constraints**:
-
-- `email` (required): Must be a valid email format
-- `password` (required): Must be at least 6 characters long
-
 **Success Response**:
 
 - **Code**: 200 OK
-- **Content Example**:
-
-```json
-{
-  "user": {
-    "_id": "60d21b4667d0d8992e610c85",
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
-    },
-    "email": "john.doe@example.com",
-    "socketId": null
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
 
 **Error Responses**:
 
 - **Code**: 400 Bad Request
-  - **Condition**: If validation fails (e.g., invalid email format)
-  - **Content Example**:
-
-```json
-{
-  "errors": [
-    {
-      "value": "invalid-email",
-      "msg": "Invalid email format",
-      "param": "email",
-      "location": "body"
-    }
-  ]
-}
-```
-
 - **Code**: 401 Unauthorized
-  - **Condition**: If the email or password is incorrect
-  - **Content Example**:
-
-```json
-{
-  "message": "Invalid email or password"
-}
-```
-
 - **Code**: 500 Internal Server Error
-  - **Condition**: If there's a server error during authentication
-  - **Content Example**:
 
-```json
-{
-  "message": "Error message details"
-}
-```
-
-### User Profile
+#### User Profile
 
 Retrieve the profile information of the authenticated user.
 
@@ -187,45 +111,13 @@ Retrieve the profile information of the authenticated user.
 **Success Response**:
 
 - **Code**: 200 OK
-- **Content Example**:
-
-```json
-{
-  "user": {
-    "_id": "60d21b4667d0d8992e610c85",
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
-    },
-    "email": "john.doe@example.com",
-    "socketId": null
-  }
-}
-```
 
 **Error Responses**:
 
 - **Code**: 401 Unauthorized
-  - **Condition**: If the user is not authenticated
-  - **Content Example**:
-
-```json
-{
-  "message": "Unauthorized access"
-}
-```
-
 - **Code**: 500 Internal Server Error
-  - **Condition**: If there's a server error while fetching the profile
-  - **Content Example**:
 
-```json
-{
-  "message": "Error message details"
-}
-```
-
-### User Logout
+#### User Logout
 
 Log out the currently authenticated user.
 
@@ -238,35 +130,86 @@ Log out the currently authenticated user.
 **Success Response**:
 
 - **Code**: 200 OK
-- **Content Example**:
-
-```json
-{
-  "message": "Logged out successfully"
-}
-```
 
 **Error Responses**:
 
 - **Code**: 401 Unauthorized
-  - **Condition**: If the user is not authenticated
-  - **Content Example**:
-
-```json
-{
-  "message": "Unauthorized access"
-}
-```
-
 - **Code**: 500 Internal Server Error
-  - **Condition**: If there's a server error during logout
-  - **Content Example**:
+
+### Rider Routes
+
+#### Create Ride Request
+
+Create a new ride request.
+
+**URL**: `/riders/create-ride`
+
+**Method**: `POST`
+
+**Authentication required**: Yes
+
+**Request Body**:
 
 ```json
 {
-  "message": "Error message details"
+  "pickup": {
+    "latitude": 40.7128,
+    "longitude": -74.0060
+  },
+  "destination": {
+    "latitude": 40.7484,
+    "longitude": -73.9857
+  }
 }
 ```
+
+**Success Response**:
+
+- **Code**: 201 Created
+
+**Error Responses**:
+
+- **Code**: 400 Bad Request
+- **Code**: 401 Unauthorized
+- **Code**: 500 Internal Server Error
+
+#### Get Active Ride
+
+Get the active ride for the authenticated user.
+
+**URL**: `/riders/active-ride`
+
+**Method**: `GET`
+
+**Authentication required**: Yes
+
+**Success Response**:
+
+- **Code**: 200 OK
+
+**Error Responses**:
+
+- **Code**: 404 Not Found
+- **Code**: 500 Internal Server Error
+
+#### Cancel Ride
+
+Cancel an active ride.
+
+**URL**: `/riders/cancel-ride/:rideId`
+
+**Method**: `PUT`
+
+**Authentication required**: Yes
+
+**Success Response**:
+
+- **Code**: 200 OK
+
+**Error Responses**:
+
+- **Code**: 404 Not Found
+- **Code**: 500 Internal Server Error
 
 ## Data Models
 
@@ -281,6 +224,26 @@ Log out the currently authenticated user.
   email: String,       // required, unique, min length 5
   password: String,    // required, not returned in queries
   socketId: String     // optional
+}
+```
+
+### Ride Model
+
+```javascript
+{
+  rider: ObjectId,     // reference to User model
+  driver: ObjectId,    // reference to User model
+  pickup: {
+    latitude: Number,
+    longitude: Number
+  },
+  destination: {
+    latitude: Number,
+    longitude: Number
+  },
+  status: String,      // enum: ['pending', 'accepted', 'in-progress', 'completed', 'cancelled']
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 
