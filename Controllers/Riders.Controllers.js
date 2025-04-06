@@ -1,4 +1,5 @@
 const RiderModel = require('../Models/Riders.model');
+const BlackList = require('../Models/blackList.model');
 const RiderServices = require('../services/Riders.services');
 const { validationResult } = require('express-validator');
 
@@ -36,4 +37,16 @@ module.exports.loginRider = async (req, res) => {
     const token = rider.generateAuthToken();
     res.cookie('token', token);
     res.status(200).json({ rider, token });
+}
+
+module.exports.getRiderProfile = async (req, res) => {
+    const rider = await RiderModel.findById(req.Rider._id);
+    res.status(200).json({ rider });
+}
+
+module.exports.logout = async (req, res) => {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    await BlackList.create({ token });
+    res.clearCookie('token');
+    res.status(200).json({ message: 'Logout successfully' });
 }

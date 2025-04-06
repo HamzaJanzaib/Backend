@@ -123,7 +123,7 @@ Log out the currently authenticated user.
 
 **URL**: `/users/logout`
 
-**Method**: `POST`
+**Method**: `GET`
 
 **Authentication required**: Yes
 
@@ -138,28 +138,26 @@ Log out the currently authenticated user.
 
 ### Rider Routes
 
-#### Create Ride Request
+#### Rider Registration
 
-Create a new ride request.
+Register a new rider in the system.
 
-**URL**: `/riders/create-ride`
+**URL**: `/riders/register`
 
 **Method**: `POST`
 
-**Authentication required**: Yes
+**Authentication required**: No
 
 **Request Body**:
 
 ```json
 {
-  "pickup": {
-    "latitude": 40.7128,
-    "longitude": -74.0060
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
   },
-  "destination": {
-    "latitude": 40.7484,
-    "longitude": -73.9857
-  }
+  "email": "john.doe@example.com",
+  "password": "password123"
 }
 ```
 
@@ -170,14 +168,42 @@ Create a new ride request.
 **Error Responses**:
 
 - **Code**: 400 Bad Request
+- **Code**: 500 Internal Server Error
+
+#### Rider Login
+
+Authenticate a rider and receive a JWT token.
+
+**URL**: `/riders/login`
+
+**Method**: `POST`
+
+**Authentication required**: No
+
+**Request Body**:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+**Success Response**:
+
+- **Code**: 200 OK
+
+**Error Responses**:
+
+- **Code**: 400 Bad Request
 - **Code**: 401 Unauthorized
 - **Code**: 500 Internal Server Error
 
-#### Get Active Ride
+#### Rider Profile
 
-Get the active ride for the authenticated user.
+Retrieve the profile information of the authenticated rider.
 
-**URL**: `/riders/active-ride`
+**URL**: `/riders/profile`
 
 **Method**: `GET`
 
@@ -189,16 +215,16 @@ Get the active ride for the authenticated user.
 
 **Error Responses**:
 
-- **Code**: 404 Not Found
+- **Code**: 401 Unauthorized
 - **Code**: 500 Internal Server Error
 
-#### Cancel Ride
+#### Rider Logout
 
-Cancel an active ride.
+Log out the currently authenticated rider.
 
-**URL**: `/riders/cancel-ride/:rideId`
+**URL**: `/riders/logout`
 
-**Method**: `PUT`
+**Method**: `POST`
 
 **Authentication required**: Yes
 
@@ -208,6 +234,29 @@ Cancel an active ride.
 
 **Error Responses**:
 
+- **Code**: 401 Unauthorized
+- **Code**: 500 Internal Server Error
+
+### Admin Routes
+
+#### Blacklist User
+
+Add a user to the blacklist, preventing them from using the service.
+
+**URL**: `/admin/blacklist/:userId`
+
+**Method**: `POST`
+
+**Authentication required**: Yes (Admin only)
+
+**Success Response**:
+
+- **Code**: 200 OK
+
+**Error Responses**:
+
+- **Code**: 401 Unauthorized
+- **Code**: 403 Forbidden
 - **Code**: 404 Not Found
 - **Code**: 500 Internal Server Error
 
@@ -223,7 +272,8 @@ Cancel an active ride.
   },
   email: String,       // required, unique, min length 5
   password: String,    // required, not returned in queries
-  socketId: String     // optional
+  socketId: String,    // optional
+  isBlacklisted: Boolean // default: false
 }
 ```
 
